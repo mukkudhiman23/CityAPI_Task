@@ -1,7 +1,5 @@
 <html>
   <head>
-    <link />
-
     <!-- Latest compiled and minified CSS -->
     <link
       rel="stylesheet"
@@ -11,16 +9,21 @@
     <!-- jQuery library -->
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
     <style>
-      body{
-        background-image: url('https://wallpapercave.com/wp/PPMnOZM.jpg');
+      body {
+        background-image: url("https://wallpapercave.com/wp/PPMnOZM.jpg");
         background-repeat: no-repeat;
         background-size: cover;
       }
+
       .card {
         margin-top: 200px;
         height: 300px;
       }
-      label,h3 {
+
+      label,
+      h3,
+      h5,
+      h4 {
         color: blanchedalmond;
       }
     </style>
@@ -30,17 +33,15 @@
     <div class="row">
       <div class="col-sm-3"></div>
       <div class="col-sm-6 card bg-dark">
-      <h3>API Task</h3>
-          <label class="mt-4">Select City:</labelclass="mt-4">
-          <select id="demo" class="form-control ">
-            <option value="unassigned">Select City</option>
-            <% for (var j = 0; j < name.length; j++){ %><option
-              value="<%= name[j].city_name %>"
-            >
-              <%= name[j].city_name %><% } %>
-            </option>
-          </select><br>
-       
+        <h3>API Task</h3>
+        <h5>Enter City Name:</h5>
+        <input
+          type="text"
+          id="city"
+          class="form-control"
+          onkeyup="getApiData()"
+        />
+        <br />
         <h4 id="data"></h4>
       </div>
       <div class="col-sm-3"></div>
@@ -48,21 +49,32 @@
   </body>
 </html>
 <script>
-  $("#demo").change(function() {
-    var firstDropVal = $("#demo").val();
-
-    let api_url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${firstDropVal}.json?access_token=pk.eyJ1IjoibWVoYWtkaGltYW4iLCJhIjoiY2s2bjZjcGsyMDdkcTNucWI3bmIzdGZhMiJ9.pwXQ7omkxcw39x2pa3fJVQ`;
+  //debounce
+  const getdata = () => {
+    let fetchedData = $("#city").val();
+    let api_url = `https://api.mapbox.com/geocoding/v5/mapbox.places/${fetchedData}.json?access_token=pk.eyJ1IjoibWVoYWtkaGltYW4iLCJhIjoiY2s2bjZjcGsyMDdkcTNucWI3bmIzdGZhMiJ9.pwXQ7omkxcw39x2pa3fJVQ&limit=2`;
     $.ajax({
       url: api_url,
-
       dataType: "json",
       success: function(result) {
         var content1 = result.features[1].geometry.coordinates;
         var content = result.features[1].place_name;
-
-        let main="place name: " + content + " and coordinates are:" + content1;
-        $('#data').text(main);
+        let main =
+          "place name: " + content + " and coordinates are:" + content1;
+        $("#data").text(main);
       }
     });
-  });
+  };
+  const dotask = function(getFunction, delay) {
+    let timer;
+    return function() {
+      let context = this,
+        args = arguments;
+      clearTimeout(timer);
+      setTimeout(() => {
+        timer = getdata.apply(context, arguments);
+      }, delay);
+    };
+  };
+  const getApiData = dotask(getdata, 800);
 </script>

@@ -15,6 +15,11 @@ router.get("/", (req, res) => {
     })
     .select("city_name");
 });
+
+router.get("/", (req, res) => {
+  console.log(req.query.mainData);
+});
+
 module.exports = router;
 
 function OnChangeCity(val) {
